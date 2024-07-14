@@ -34,8 +34,8 @@ const mutations = {
   setError(state, error) {
     state.error = error;
   },
-  setTimeLeft(state, timeLeft) {
-    state.timeLeft = timeLeft;
+  setTimeLeft(state, time) {
+    state.timeLeft = time;
   },
 };
 

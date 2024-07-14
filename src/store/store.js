@@ -13,6 +13,7 @@ const store = new Vuex.Store({
     gameInProgress: false,
     gameOver: false,
     error: null,
+    timeLeft: 30, // Time left for the timer
   },
   mutations: {
     setQuestions(state, questions) {
@@ -36,6 +37,9 @@ const store = new Vuex.Store({
     setError(state, error) {
       state.error = error;
     },
+    setTimeLeft(state, time) {
+      state.timeLeft = time;
+    },
   },
   actions: {
     async fetchQuestions({ commit }) {
@@ -46,39 +50,6 @@ const store = new Vuex.Store({
         commit("setError", error.message);
       }
     },
-    startGame({ commit, dispatch }) {
-      commit("setGameInProgress", true);
-      commit("setGameOver", false);
-      commit("setScore", 0);
-      commit("setWinnings", 0);
-      dispatch("getNextQuestion");
-    },
-    getNextQuestion({ state, commit }) {
-      const nextIndex = state.currentQuestionIndex + 1;
-      if (nextIndex <= state.questions.length - 1) {
-        commit("setCurrentQuestionIndex", nextIndex);
-      } else {
-        commit("setGameOver", true);
-        commit("setGameInProgress", false);
-      }
-    },
-    selectAnswer({ state, commit, dispatch }, answerIndex) {
-      const currentQuestion = state.questions[state.currentQuestionIndex];
-      if (currentQuestion.correctIndex === answerIndex) {
-        const newScore = state.score + 1;
-        const newWinnings = calculateWinnings(newScore);
-        commit("setScore", newScore);
-        commit("setWinnings", newWinnings);
-        dispatch("getNextQuestion");
-      } else {
-        commit("setGameOver", true);
-        commit("setGameInProgress", false);
-      }
-    },
-    walkAway({ commit }) {
-      commit("setGameOver", true);
-      commit("setGameInProgress", false);
-    },
   },
   getters: {
     currentQuestion(state) {
@@ -86,6 +57,12 @@ const store = new Vuex.Store({
     },
     totalQuestions(state) {
       return state.questions.length;
+    },
+    currentQuestionIndex(state) {
+      return state.currentQuestionIndex;
+    },
+    timeLeft(state) {
+      return state.timeLeft;
     },
   },
 });

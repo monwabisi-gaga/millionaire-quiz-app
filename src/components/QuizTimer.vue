@@ -1,3 +1,4 @@
+<!-- src/components/QuizTimer.vue -->
 <template>
   <div>
     <p>{{ timeLeft }}</p>
@@ -16,6 +17,7 @@ export default {
   data() {
     return {
       timeLeft: this.duration,
+      interval: null,
     };
   },
   methods: {
@@ -26,12 +28,30 @@ export default {
         this.$emit('timeUp');
       }
     },
+    startTimer() {
+      this.timeLeft = this.duration;
+      this.interval = setInterval(this.countdown, 1000);
+    },
+    stopTimer() {
+      clearInterval(this.interval);
+    },
   },
   mounted() {
-    this.interval = setInterval(this.countdown, 1000);
+    this.startTimer();
   },
   beforeUnmount() {
-    clearInterval(this.interval);
+    this.stopTimer();
+  },
+  watch: {
+    duration(newVal) {
+      this.timeLeft = newVal;
+    },
+    timeLeft(newVal) {
+      if (newVal === 0) {
+        this.stopTimer(); // Optional: stop timer when timeLeft reaches 0
+        this.$emit('timeUp'); // Emit event when time is up
+      }
+    },
   },
 };
 </script>

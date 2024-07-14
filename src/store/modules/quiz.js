@@ -1,4 +1,5 @@
 import axios from "axios";
+import router from "../../router";
 
 const state = {
   questions: [],
@@ -8,6 +9,7 @@ const state = {
   gameInProgress: false,
   gameOver: false,
   error: null,
+  timeLeft: 30,
 };
 
 const mutations = {
@@ -32,6 +34,9 @@ const mutations = {
   setError(state, error) {
     state.error = error;
   },
+  setTimeLeft(state, timeLeft) {
+    state.timeLeft = timeLeft;
+  },
 };
 
 const actions = {
@@ -51,19 +56,22 @@ const actions = {
     commit("setScore", 0);
     commit("setWinnings", 0);
     dispatch("getNextQuestion");
+    dispatch("resetTimer");
   },
-  getNextQuestion({ state, commit }) {
+  getNextQuestion({ state, commit, dispatch }) {
     const nextIndex = state.currentQuestionIndex + 1;
     if (nextIndex < state.questions.length) {
       commit("setCurrentQuestionIndex", nextIndex);
+      dispatch("resetTimer");
     } else {
       commit("setGameOver", true);
       commit("setGameInProgress", false);
+      router.push("/result");
     }
   },
-  selectAnswer({ state, commit, dispatch }, answerIndex) {
+  submitAnswer({ state, commit, dispatch }, answer) {
     const currentQuestion = state.questions[state.currentQuestionIndex];
-    if (currentQuestion.correctIndex === answerIndex) {
+    if (currentQuestion.correctAnswer === answer) {
       const newScore = state.score + 1;
       const newWinnings = calculateWinnings(newScore);
       commit("setScore", newScore);
@@ -72,11 +80,33 @@ const actions = {
     } else {
       commit("setGameOver", true);
       commit("setGameInProgress", false);
+      router.push({
+        path: "/result",
+        query: {
+          score: state.score,
+        },
+      });
     }
   },
   walkAway({ commit }) {
     commit("setGameOver", true);
     commit("setGameInProgress", false);
+    router.push({
+      path: "/result",
+      query: {
+        score: state.score,
+      },
+    });
+  },
+  resetTimer({ commit }) {
+    commit("setTimeLeft", 30);
+  },
+  decrementTimer({ state, commit, dispatch }) {
+    if (state.timeLeft > 0) {
+      commit("setTimeLeft", state.timeLeft - 1);
+    } else {
+      dispatch("submitAnswer", null);
+    }
   },
 };
 
@@ -87,10 +117,13 @@ const getters = {
   totalQuestions(state) {
     return state.questions.length;
   },
+  timeLeft(state) {
+    return state.timeLeft;
+  },
 };
 
 function calculateWinnings(score) {
-  return score;
+  return score * 1000;
 }
 
 export default {

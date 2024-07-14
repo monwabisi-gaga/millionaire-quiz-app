@@ -13,7 +13,10 @@
           />
         </li>
       </ul>
-      <Timer @timeUp="handleTimeUp" />
+      <div class="mt-4">
+        <p v-if="remainingTime > 0">Time remaining: {{ remainingTime }} seconds</p>
+        <p v-else>Time's up!</p>
+      </div>
     </div>
     <div v-else>
       <p>Loading questions...</p>
@@ -30,24 +33,26 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import Timer from "../components/QuizTimer.vue";
 import AnswerOption from "../components/AnswerOption.vue";
 
 export default {
   components: {
-    Timer,
     AnswerOption,
   },
   computed: {
     ...mapGetters(["currentQuestion", "correctAnswers"]),
   },
+  data() {
+    return {
+      remainingTime: 30,
+      timer: null,
+    };
+  },
   methods: {
     ...mapActions(["fetchQuestions", "submitAnswer", "walkAway"]),
     async submitAnswerHandler(answer) {
       await this.submitAnswer(answer);
-      if (!this.currentQuestion) {
-        this.$router.push("/result");
-      }
+      this.remainingTime = 30;
     },
     handleTimeUp() {
       this.walkAwayHandler();
@@ -55,9 +60,23 @@ export default {
     async walkAwayHandler() {
       await this.walkAway();
     },
+    startTimer() {
+      this.timer = setInterval(() => {
+        if (this.remainingTime > 0) {
+          this.remainingTime--;
+        } else {
+          clearInterval(this.timer);
+          this.handleTimeUp();
+        }
+      }, 1000);
+    },
   },
   mounted() {
     this.fetchQuestions();
+    this.startTimer();
+  },
+  beforeUnmount() {
+    clearInterval(this.timer);
   },
 };
 </script>

@@ -3,9 +3,9 @@
     <div class="text-center">
       <h2 class="text-3xl font-bold mb-4">Game Over</h2>
       <p class="text-xl mb-4">
-        You got {{ $route.query.correctAnswers }} questions correct.
+        You got {{ $route.query.score }} questions correct.
       </p>
-      <p class="text-xl mb-4">Your total winnings: {{ $route.query.winnings }}</p>
+      <p class="text-xl mb-4">Your total winnings: {{ $route.query.score * 100 }}</p>
       <router-link to="/" class="bg-green-500 text-white px-4 py-2 rounded-lg">
         Play Again
       </router-link>

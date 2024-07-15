@@ -1,24 +1,18 @@
 # millionaire-quiz-app
 
 ## Project setup
+
 ```
-yarn install
+npm install
 ```
 
 ### Compiles and hot-reloads for development
+
 ```
-yarn serve
+npm run serve
 ```
 
-### Compiles and minifies for production
-```
-yarn build
-```
+### Comments
 
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+I focused on implementing the logic and not so much on the UI.
+For a preview of css focused implementation, please take a look at this: [Storefront](https://github.com/monwabisi-gaga/storefront/tree/main)
